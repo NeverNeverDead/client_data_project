@@ -1,0 +1,58 @@
+version: "3.8"
+
+services:
+  database:
+    image: postgres:15
+    deploy:
+      replicas: 1
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: strongpassword
+      POSTGRES_DB: insurance_data
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@insurance.com
+      PGADMIN_DEFAULT_PASSWORD: strongpassword
+    ports:
+      - "8081:80"
+
+  flask_api:
+    image: client_data_project-flask_api
+    deploy:
+      replicas: 3
+    ports:
+      - "5000:5000"
+    depends_on:
+      - database
+
+  message_queue:
+    image: rabbitmq:management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+  frontend:
+    image: client_data_project-frontend
+    deploy:
+      replicas: 2
+    ports:
+      - "3000:80"
+
+  message_consumer:
+    image: curvereality/message_consumer:latest
+    depends_on:
+      - message_queue
+
+volumes:
+  postgres_data:
+
+networks:
+  default:
+    driver: overlay  # Установка драйвера overlay для сети
+

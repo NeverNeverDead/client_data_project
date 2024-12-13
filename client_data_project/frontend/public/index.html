@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Управление клиентами</title>
+</head>
+<body>
+    <h1>Система управления данными клиентов для страховых компаний</h1>
+    <div>
+        <h2>Клиенты:</h2>
+        <ul id="clients-list"></ul>
+    </div>
+    <script>
+        // Ваш код для запроса к API
+        fetch('http://localhost:5000/clients')
+            .then(response => response.json())
+            .then(data => {
+                const clientsList = document.getElementById('clients-list');
+                data.forEach(client => {
+                    const li = document.createElement('li');
+                    li.textContent = `${client.id}: ${client.name} (Полис: ${client.policy})`;
+                    clientsList.appendChild(li);
+                });
+            })
+            .catch(error => console.error('Ошибка:', error));
+    </script>
+</body>
+</html>
+
